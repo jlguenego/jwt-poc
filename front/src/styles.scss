@@ -1,1 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+
+button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  border: 0.1em solid #eee;
+  background: #eee;
+  &:not(:disabled) {
+    cursor: pointer;
+    &:hover {
+      border-color: #ddd;
+      background: #ddd;
+    }
+    &:active {
+      border-color: #ccc;
+      background: #ccc;
+    }
+
+    &.primary {
+      color: white;
+      border-color: #333;
+      background: #333;
+      &:hover {
+        border-color: #444;
+        background: #444;
+      }
+      &:active {
+        border-color: #555;
+        background: #555;
+      }
+    }
+  }
+}
