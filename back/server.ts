@@ -1,11 +1,60 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import serveIndex from "serve-index";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+
+declare module "http" {
+  interface IncomingMessage {
+    jwt?: Object;
+  }
+}
 
 const app = express();
 const port = 3000;
 const www = ".";
+const jwtSecret = "this is a secret key. Keep it secret.";
 
-app.get("/ws/now", (req, res) => res.json({ date: new Date() }));
+const users = [{ login: "jlouis", password: "toto", role: "admin" }];
+
+app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+
+app.post("/ws/login", (req, res) => {
+  const { login, password } = req.body;
+  const user = users.find((u) => u.login === login && u.password === password);
+  if (!user) {
+    res.status(401).end();
+    return;
+  }
+  const jwtToken = jwt.sign({ login: user.login, role: user.role }, jwtSecret);
+  res.cookie("jwt", jwtToken, { maxAge: 3600 * 24 * 365, httpOnly: true });
+  res.status(204).end();
+});
+
+app.post("/ws/logout", (req, res) => {
+  res.cookie("jwt", "", { expires: new Date(0) });
+  res.status(204).end();
+});
+
+const jwtMw: RequestHandler = (req, res, next) => {
+  try {
+    const jwtDecoded = jwt.verify(req.cookies.jwt, jwtSecret);
+    console.log("jwtDecoded: ", jwtDecoded);
+    req.jwt = jwtDecoded;
+    next();
+  } catch (error) {
+    res.status(401).end();
+  }
+};
+
+app.get("/ws/secret", jwtMw, (req, res) => {
+  res.json({
+    secret: "this is my  nice secret",
+    login: req.jwt["login"],
+  });
+});
 
 app.use(express.static(www));
 app.use(serveIndex(www, { icons: true }));

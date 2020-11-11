@@ -3,17 +3,17 @@
     <form [formGroup]="f" (ngSubmit)="submit()">
       <label>
         <div>Login</div>
-        <input type="text" />
+        <input type="text" formControlName="login" />
       </label>
       <label>
         <div>Password</div>
-        <input type="password" />
+        <input type="password" formControlName="password" />
       </label>
-      <button>Connect</button>
+      <button class="primary">Connect</button>
     </form>
   </ng-container>
   <ng-container *ngIf="isConnected">
-    <div>You are connected.</div>
+    <button class="primary" (click)="logout()">Disconnect</button>
   </ng-container>
 
   <button class="secret" (click)="getSecret()">Access to the secret</button>

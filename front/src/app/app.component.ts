@@ -13,23 +13,45 @@ export class AppComponent {
   isConnected = false;
 
   f = new FormGroup({
-    login: new FormControl(''),
-    password: new FormControl(''),
+    login: new FormControl('jlouis'),
+    password: new FormControl('toto'),
   });
 
-  secret: Secret = {};
+  secret: Secret;
 
   constructor(private http: HttpClient) {}
 
   submit(): void {
     console.log('submit');
+    this.http.post<void>('/ws/login', this.f.value).subscribe({
+      next: () => {
+        this.isConnected = true;
+      },
+      error: (err) => {
+        console.log('err: ', err);
+      },
+    });
   }
 
   getSecret(): void {
-    this.http.get<Secret>('http://localhost:3000/ws/now').subscribe({
+    this.http.get<Secret>('/ws/secret').subscribe({
       next: (secret) => {
         console.log('secret: ', secret);
         this.secret = secret;
+      },
+      error: (err) => {
+        console.log('err: ', err);
+        this.secret = undefined;
+        alert('cannot have the secret');
+      },
+    });
+  }
+
+  logout(): void {
+    this.http.post<void>('/ws/logout', undefined).subscribe({
+      next: () => {
+        this.isConnected = false;
+        this.secret = undefined;
       },
       error: (err) => {
         console.log('err: ', err);
