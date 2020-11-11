@@ -38,9 +38,9 @@ app.post("/ws/logout", (req, res) => {
   res.status(204).end();
 });
 
-const jwtMw: RequestHandler = (req, res, next) => {
+const jwtMw = (secret: string): RequestHandler => (req, res, next) => {
   try {
-    const jwtDecoded = jwt.verify(req.cookies.jwt, jwtSecret);
+    const jwtDecoded = jwt.verify(req.cookies.jwt, secret);
     console.log("jwtDecoded: ", jwtDecoded);
     req.jwt = jwtDecoded;
     next();
@@ -49,9 +49,9 @@ const jwtMw: RequestHandler = (req, res, next) => {
   }
 };
 
-app.get("/ws/secret", jwtMw, (req, res) => {
+app.get("/ws/secret", jwtMw(jwtSecret), (req, res) => {
   res.json({
-    secret: "this is my  nice secret",
+    secret: "this is my nice secret",
     login: req.jwt["login"],
   });
 });
