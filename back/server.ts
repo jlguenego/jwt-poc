@@ -6,11 +6,12 @@ import jwt from "jsonwebtoken";
 
 declare module "http" {
   interface IncomingMessage {
-    jwt?: Object;
+    jwt?: { [key: string]: string };
   }
 }
 
 const app = express();
+app.disable("x-powered-by");
 const port = 3000;
 const www = ".";
 const jwtSecret = "this is a secret key. Keep it secret.";
@@ -24,7 +25,7 @@ app.use(cookieParser());
 app.post("/ws/login", (req, res) => {
   const { login, password } = req.body;
   const user = users.find((u) => u.login === login && u.password === password);
-  if (!user) {
+  if (user === undefined) {
     res.status(401).end();
     return;
   }
@@ -40,7 +41,9 @@ app.post("/ws/logout", (req, res) => {
 
 const jwtMw = (secret: string): RequestHandler => (req, res, next) => {
   try {
-    const jwtDecoded = jwt.verify(req.cookies.jwt, secret);
+    const jwtDecoded = jwt.verify(req.cookies.jwt, secret) as {
+      [key: string]: string;
+    };
     console.log("jwtDecoded: ", jwtDecoded);
     // try {
     //   authorizeCheck(req, jwtDecoded);

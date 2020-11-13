@@ -22,7 +22,12 @@
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.6",
     "serve-index": "^1.9.1",
-    "ts-node": "^9.0.0",
+    "ts-node": "^9.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
     "typescript": "^4.0.5"
   }
 }
