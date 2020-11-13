@@ -42,6 +42,11 @@ const jwtMw = (secret: string): RequestHandler => (req, res, next) => {
   try {
     const jwtDecoded = jwt.verify(req.cookies.jwt, secret);
     console.log("jwtDecoded: ", jwtDecoded);
+    // try {
+    //   authorizeCheck(req, jwtDecoded);
+    // } catch (error) {
+    //   res.status(403).end();
+    // }
     req.jwt = jwtDecoded;
     next();
   } catch (error) {
