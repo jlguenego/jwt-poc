@@ -1,4 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
@@ -30,5 +33,31 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('button.secret').textContent).toContain(
       'Access to the secret'
     );
+  });
+
+  it('should submit', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.submit();
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/ws/login');
+    expect(req.request.method).toEqual('POST');
+    req.flush({});
+    http.verify();
+    expect(component.isConnected).toBeTrue();
+  });
+
+  it('should submit in error', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.submit();
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/ws/login');
+    expect(req.request.method).toEqual('POST');
+    req.flush(null, { status: 500, statusText: 'internal error' });
+    http.verify();
+    expect(component.isConnected).toBeFalse();
   });
 });

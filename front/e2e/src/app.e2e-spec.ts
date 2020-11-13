@@ -8,16 +8,28 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display the secret button', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('front app is running!');
+    expect(page.getTitleText()).toEqual('Access to the secret');
+  });
+
+  it('should connect', async () => {
+    await page.navigateTo();
+    await page.fillForm({ login: 'jlouis', password: 'toto' });
+    await page.clickOnConnect();
+    const secret = await page.showSecret();
+    expect(secret).toEqual(
+      '{ "secret": "this is my nice secret", "login": "jlouis" }'
+    );
   });
 
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    expect(logs).not.toContain(jasmine.objectContaining({
-      level: logging.Level.SEVERE,
-    } as logging.Entry));
+    expect(logs).not.toContain(
+      jasmine.objectContaining({
+        level: logging.Level.SEVERE,
+      } as logging.Entry)
+    );
   });
 });
