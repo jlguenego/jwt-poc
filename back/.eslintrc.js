@@ -11,4 +11,7 @@ module.exports = {
   rules: {
     eqeqeq: ["error", "smart"],
   },
+  standard: {
+    env: ["mocha"],
+  },
 };
